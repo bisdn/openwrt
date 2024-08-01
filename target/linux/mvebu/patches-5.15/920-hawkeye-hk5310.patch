@@ -1,0 +1,87 @@
+diff --git a/arch/arm64/boot/dts/marvell/armada-cp11x.dtsi b/arch/arm64/boot/dts/marvell/armada-cp11x.dtsi
+index 3bd2182817fb..fd1576c57cd0 100644
+--- a/arch/arm64/boot/dts/marvell/armada-cp11x.dtsi
++++ b/arch/arm64/boot/dts/marvell/armada-cp11x.dtsi
+@@ -227,6 +227,9 @@ CP11X_LABEL(clk): clock {
+ 				#clock-cells = <2>;
+ 			};
+ 
++			CP11X_LABEL(pinctrl): pinctrl {
++                        };
++
+ 			CP11X_LABEL(gpio1): gpio@100 {
+ 				compatible = "marvell,armada-8k-gpio";
+ 				offset = <0x100>;
+@@ -415,6 +418,18 @@ CP11X_LABEL(i2c1): i2c@701100 {
+ 			status = "disabled";
+ 		};
+ 
++		CP11X_LABEL(mss_i2c): i2c@211000 {
++                        compatible = "marvell,mv78230-i2c";
++                        reg = <0x211000 0x20>;
++                        #address-cells = <1>;
++                        #size-cells = <0>;
++                        interrupts = <0 IRQ_TYPE_LEVEL_HIGH>;
++                        clock-names = "core", "reg";
++                        clocks = <&CP11X_LABEL(clk) 1 21>,
++                                 <&CP11X_LABEL(clk) 1 17>;
++                        status = "disabled";
++                };
++
+ 		CP11X_LABEL(uart0): serial@702000 {
+ 			compatible = "snps,dw-apb-uart";
+ 			reg = <0x702000 0x100>;
+diff --git a/drivers/net/phy/realtek.c b/drivers/net/phy/realtek.c
+index 11be60333fa8..369c29d32175 100644
+--- a/drivers/net/phy/realtek.c
++++ b/drivers/net/phy/realtek.c
+@@ -31,6 +31,8 @@
+ #define RTL8211F_PHYCR2				0x19
+ #define RTL8211F_INSR				0x1d
+ 
++#define RTL8211F_EEE_ENABLE			0x20
++
+ #define RTL8211F_TX_DELAY			BIT(8)
+ #define RTL8211F_RX_DELAY			BIT(3)
+ 
+@@ -334,8 +336,19 @@ static int rtl8211f_config_init(struct phy_device *phydev)
+ 	struct rtl821x_priv *priv = phydev->priv;
+ 	struct device *dev = &phydev->mdio.dev;
+ 	u16 val_txdly, val_rxdly;
++	u16 val_eee;
+ 	int ret;
+ 
++	/* Disable EEE mode */
++	val_eee = phy_read_paged(phydev, 0xa43, 0x19);
++	val_eee &= ~(RTL8211F_EEE_ENABLE);
++	phy_write_paged(phydev, 0xa43, 0x19, val_eee);
++
++
++	/* Set LED0 - SPD 100M, LED1 - LNK/ACT, LED2 - SPD 1000M */
++	phy_write_paged(phydev, 0xd04, 0x10, 0x2362);
++	phy_write_paged(phydev, 0xd04, 0x11, 0x0);
++
+ 	ret = phy_modify_paged_changed(phydev, 0xa43, RTL8211F_PHYCR1,
+ 				       RTL8211F_ALDPS_PLL_OFF | RTL8211F_ALDPS_ENABLE | RTL8211F_ALDPS_XTAL_OFF,
+ 				       priv->phycr1);
+diff --git a/drivers/power/reset/gpio-poweroff.c b/drivers/power/reset/gpio-poweroff.c
+index 1c5af2fef142..6915b5000191 100644
+--- a/drivers/power/reset/gpio-poweroff.c
++++ b/drivers/power/reset/gpio-poweroff.c
+@@ -49,10 +49,12 @@ static void gpio_poweroff_do_poweroff(void)
+ static int gpio_poweroff_probe(struct platform_device *pdev)
+ {
+ 	bool input = false;
++	bool force = false;
+ 	enum gpiod_flags flags;
+ 
+ 	/* If a pm_power_off function has already been added, leave it alone */
+-	if (pm_power_off != NULL) {
++	force = of_property_read_bool(pdev->dev.of_node, "force");
++	if (!force && pm_power_off != NULL) {
+ 		dev_err(&pdev->dev,
+ 			"%s: pm_power_off function already registered\n",
+ 		       __func__);
+-- 
+2.45.2
+

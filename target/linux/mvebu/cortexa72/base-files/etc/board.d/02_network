@@ -13,6 +13,12 @@ case "$board" in
 globalscale,mochabin)
 	ucidef_set_interfaces_lan_wan "lan0 lan1 lan2 lan3" "eth0 eth2"
 	;;
+hawkeye,hk-5130)
+	ucidef_set_interfaces_lan_wan "eth1 eth2 eth4 eth5" "eth0 eth3"
+	;;
+hawkeye,hk-5131)
+	ucidef_set_interfaces_lan "eth0 eth1 eth2 eth3"
+	;;
 iei,puzzle-m901)
 	ucidef_set_interfaces_lan_wan "eth1 eth2 eth3 eth4 eth5" "eth0"
 	;;

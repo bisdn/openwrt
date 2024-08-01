@@ -10,6 +10,8 @@ REQUIRE_IMAGE_METADATA=1
 platform_check_image() {
 	case "$(board_name)" in
 	globalscale,mochabin|\
+	hawkeye,hk-5130|\
+	hawkeye,hk-5131|\
 	iei,puzzle-m901|\
 	iei,puzzle-m902|\
 	marvell,armada8040-mcbin-doubleshot|\
@@ -30,6 +32,8 @@ platform_do_upgrade() {
 		platform_do_upgrade_emmc "$1"
 		;;
 	globalscale,mochabin|\
+	hawkeye,hk-5130|\
+	hawkeye,hk-5131|\
 	marvell,armada8040-mcbin-doubleshot|\
 	marvell,armada8040-mcbin-singleshot|\
 	marvell,armada8040-clearfog-gt-8k)
@@ -43,6 +47,8 @@ platform_do_upgrade() {
 platform_copy_config() {
 	case "$(board_name)" in
 	globalscale,mochabin|\
+	hawkeye,hk-5130|\
+	hawkeye,hk-5131|\
 	iei,puzzle-m901|\
 	iei,puzzle-m902|\
 	marvell,armada8040-mcbin-doubleshot|\
