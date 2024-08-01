@@ -1,0 +1,19 @@
+// SPDX-License-Identifier: GPL-2.0+
+/*
+ * Copyright (C) 2018-2021 Marvell International Ltd.
+ */
+
+#include "hk5130.dts" /* include SoC device tree */
+
+/ {
+	compatible = "hawkeye,hk-5131", "marvell,cn9131", "marvell,cn9130",
+			"marvell,armada-ap807-quad", "marvell,armada-ap807";
+};
+
+&cp0_eth0 {
+	status = "disabled";
+};
+
+&cp1_eth0 {
+	status = "disabled";
+};

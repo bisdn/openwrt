@@ -116,3 +116,14 @@ define Device/solidrun_clearfog-pro
   BOOT_SCRIPT := clearfog-pro
 endef
 TARGET_DEVICES += solidrun_clearfog-pro
+
+define Device/hawkeye_hk5130
+  $(call Device/Default-arm64)
+  BOOT_SCRIPT = hawkeye
+  DEVICE_VENDOR := Hawkeye
+  DEVICE_MODEL := HK5130
+  DEVICE_PACKAGES += wpad-basic-mbedtls kmod-ath11k-pci ath11k-firmware-qcn9074 kmod-hawkeye-hwmon-max6639 kmod-hawkyeve-irq-event-button ipq-wifi-hawkeye_hk5130
+  DEVICE_DTS := hk5130 hk5131 hk5140 hk5141
+  SOC := cn9132
+endef
+TARGET_DEVICES += hawkeye_hk5130
