@@ -1,0 +1,45 @@
+[Introduction]
+	This package offers the event button driver for Hawkeye platform with
+IRQ-based button design.
+
+[Device Tree Bindings]
+	Required properties:
+	- compatible     : Should be "hawkeye,irq-buttons"
+
+	Each event button is represented as a sub-node of the irq-button device.
+	Each node's name represents the name of the corresponding LED.
+
+	Event button sub-node properties:
+	- interrupts     : Interrupt specification for event button.
+
+
+	Example:
+	
+	irq-buttons {
+		compatible = "hawkeye,irq-buttons";
+		event1 {
+			interrupts = <GIC_SPI 1 IRQ_TYPE_EDGE_RISING>;
+		};
+		power {
+			interrupts = <GIC_SPI 6 IRQ_TYPE_EDGE_RISING>;
+		};
+	};
+
+[Driver Building and Usage]
+	# make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- KDIR=/flexbuild/build/linux/linux/arm64/output/
+	# insmod event_button.ko
+
+[Usage]
+	The driver provides two sysfs nodes for each event button under /sys/class/misc/event_button:
+
+	trigger - Read only. To get number of times event button has been triggered.
+	clean   - Write only. To clean trigger times of event button.
+
+
+	Example:
+
+	To get number of times "event1" button has bee triggered,
+	# cat /sys/class/misc/event_button/event1_trigger
+
+	To clean trigger times of "event1" button,
+	# echo 0 > /sys/class/misc/event_button/event1_clean
