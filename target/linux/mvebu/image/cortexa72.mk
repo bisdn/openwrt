@@ -86,7 +86,7 @@ define Device/hawkeye_hk5130
   BOOT_SCRIPT = hawkeye
   DEVICE_VENDOR := Hawkeye
   DEVICE_MODEL := HK5130
-  DEVICE_PACKAGES += wpad-basic-mbedtls kmod-ath11k-pci ath11k-firmware-qcn9074 kmod-hawkeye-hwmon-max6639 kmod-hawkyeve-irq-event-button ipq-wifi-hawkeye_hk5130
+  DEVICE_PACKAGES += wpad-basic-mbedtls kmod-ath11k-pci ath11k-firmware-qcn9074 ath11k-firmware-wcn6855 kmod-hawkeye-hwmon-max6639 kmod-hawkyeve-irq-event-button ipq-wifi-hawkeye_hk5130
   DEVICE_DTS := hk5130 hk5131 hk5140 hk5141
   SOC := cn9132
 endef
